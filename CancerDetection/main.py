@@ -33,6 +33,9 @@ IMG_WIDTH = 128
 IMG_HEIGHT = 128
 IMG_CHANNELS = 3
 
+# Read pandas dataframe
+df_treatment = pd.read_csv("ref_treatment.csv", delimiter='|')
+
 # List of possible diseases
 disease_dict = {0: "Melanoma",
                 1: "Melanocytic Nevus",
@@ -40,7 +43,7 @@ disease_dict = {0: "Melanoma",
                 3: "Pigmented Bowen's",
                 4: "Pigmented Benign Keratoses",
                 5: "Dermatofibroma",
-                6: "Vascular"}
+                6: "Vascular Lesion"}
 
 
 @app.route('/home')
@@ -68,6 +71,7 @@ def upload():
         photo = np.expand_dims(photo, axis=0)
         print(photo.shape)
 
+        # prediction
         prediction = model.predict(photo)
         prediction = prediction.tolist()
         print(prediction)
@@ -75,8 +79,18 @@ def upload():
         print(index)
         predicted_disease = disease_dict[index]
 
+        # recommended treatment
+        row = df_treatment.loc[df_treatment['Disease'] == predicted_disease]
+        treatment_description = row.Treatment.values[0]
+        treatment_source = row.Source.values[0]
+        treatment_url = row.URL.values[0]
 
-        return render_template('analyze.html', name=last_file, diagnostics=predicted_disease)
+        return render_template('analyze.html',
+                                name=last_file,
+                                diagnostics=predicted_disease,
+                                treatment_description=treatment_description,
+                                treatment_source=treatment_source,
+                                treatment_url=treatment_url)
 
     return render_template('upload.html')
 
