@@ -1,14 +1,28 @@
 from keras.models import Sequential
 from keras.layers import Dense
 
+
+# Create the model
 model = Sequential()
-model.add(Convolution2D(32, size=(3, 3), activation='relu', input_shape=(28, 28, 3))
-model.add(MaxPooling2D(pool_size=(2,2)))
-model.add(Convolution2D(32, size=(3,3), activation='relu'))
-model.add(MaxPooling2D(pool_size=(2,2)))
+model.add(Conv2D(32, (3, 3), input_shape=(3, 32, 32), activation='relu', padding='same'))
+model.add(Dropout(0.2))
+model.add(Conv2D(32, (3, 3), activation='relu', padding='same'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
+model.add(Dropout(0.2))
+model.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Conv2D(128, (3, 3), activation='relu', padding='same'))
+model.add(Dropout(0.2))
+model.add(Conv2D(128, (3, 3), activation='relu', padding='same'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Flatten())
-model.add(Dense(30, activation='relu'))
-model.add(Dense(10, activation='softmax'))
+model.add(Dropout(0.2))
+model.add(Dense(1024, activation='relu', kernel_constraint=maxnorm(3)))
+model.add(Dropout(0.2))
+model.add(Dense(512, activation='relu', kernel_constraint=maxnorm(3)))
+model.add(Dropout(0.2))
+model.add(Dense(num_classes, activation='softmax'))
 
 model.compile(loss='categorical_crossentropy',
                 optimizer='adam',
